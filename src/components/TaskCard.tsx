@@ -1,4 +1,3 @@
-// src/components/TaskCard.tsx
 import { FaPaperclip, FaRegComment, FaRegClock } from 'react-icons/fa';
 
 interface TaskCardProps {
