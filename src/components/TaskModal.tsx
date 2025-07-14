@@ -1,6 +1,5 @@
-// src/components/TaskModal.tsx
 import { useState, useEffect } from 'react';
-
+import toast from 'react-hot-toast';
 
 interface Task {
     id: string;
@@ -17,7 +16,7 @@ interface Task {
   interface TaskModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (newTask: Task) => void;
+    onSave: (newTask: Task) => Promise<void>;
     taskToEdit?: Task | null;
   }
 
@@ -49,8 +48,12 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
     }
   }, [isOpen, taskToEdit]);
   
-
-  const handleSubmit = () => {
+  const saveTask = async () => {
+    if (!title.trim() || !category.trim() || !members.trim()) {
+      toast.error('Preencha todos os campos obrigatórios.');
+      return;
+    }
+  
     const updatedTask: Task = {
       id: taskToEdit?.id || crypto.randomUUID(),
       title,
@@ -64,7 +67,16 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
         (new Date(endDate || new Date()).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
       ),
     };
-    onSave(updatedTask);
+  
+    await toast.promise(
+        async () => await onSave(updatedTask),
+        {
+          loading: 'Salvando...',
+          success: <b>Tarefa salva!</b>,
+          error: <b>Erro ao salvar.</b>,
+        }
+      );          
+  
     onClose();
     setTitle('');
     setCategory('');
@@ -72,6 +84,21 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
     setMembers('');
     setStartDate('');
     setEndDate('');
+  };
+  
+
+  const updatedTask: Task = {
+    id: taskToEdit?.id || crypto.randomUUID(),
+    title,
+    category,
+    subtasksDone: taskToEdit?.subtasksDone || 0,
+    subtasksTotal: taskToEdit?.subtasksTotal || 1,
+    members: members.split(',').map(m => m.trim().toUpperCase()),
+    attachments: taskToEdit?.attachments || 0,
+    comments: taskToEdit?.comments || 0,
+    daysLeft: Math.ceil(
+      (new Date(endDate || new Date()).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+    ),
   };
 
   if (!isOpen) return null;
@@ -84,7 +111,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
             {taskToEdit ? 'Editar Tarefa' : 'Nova Tarefa'}
           </h2>
           <button
-            onClick={onClose}
+            onClick={saveTask}
             className="text-gray-400 hover:text-red-500 text-xl font-bold"
           >
             &times;
@@ -168,7 +195,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
           </div>
           </div>
           <button
-            onClick={handleSubmit}
+            onClick={saveTask}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
           >
             {taskToEdit ? 'Salvar Alterações' : 'Criar Tarefa'}

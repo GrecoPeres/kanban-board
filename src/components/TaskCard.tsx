@@ -19,7 +19,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
   const progress = (task.subtasksDone / task.subtasksTotal) * 100;
 
   return (
-    <div onClick={onClick} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow mb-4">
+    <div onClick={onClick} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow mb-4 cursor-pointer">
       <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
         {task.title}
       </h3>
