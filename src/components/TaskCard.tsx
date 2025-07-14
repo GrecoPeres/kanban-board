@@ -11,14 +11,15 @@ interface TaskCardProps {
     attachments: number;
     comments: number;
     daysLeft: number;
+    onClick?: () => void;
   };
 }
 
-export default function TaskCard({ task }: TaskCardProps) {
+export default function TaskCard({ task, onClick }: TaskCardProps) {
   const progress = (task.subtasksDone / task.subtasksTotal) * 100;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow mb-4">
+    <div onClick={onClick} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow mb-4">
       <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
         {task.title}
       </h3>
@@ -36,13 +37,15 @@ export default function TaskCard({ task }: TaskCardProps) {
       </div>
       <div className="flex justify-between items-center text-xs mt-2 text-gray-500 dark:text-gray-300">
         <div className="flex -space-x-2">
+          {/* IMG ALEATORIAS PARA OS RESP DA TASK */}
           {task.members.map((member, idx) => (
-            <div
+            <img
               key={idx}
-              className="w-6 h-6 bg-blue-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800"
-            >
-              {member}
-            </div>
+              src={`https://randomuser.me/api/portraits/thumb/${idx % 2 === 0 ? 'men' : 'women'}/${idx}.jpg`}
+              alt={member}
+              className="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800"
+              title={member}
+            />
           ))}
         </div>
         <div className="flex gap-2 items-center">

@@ -16,9 +16,10 @@ interface Task {
 interface BoardColumnProps {
   title: string;
   tasks: Task[];
+  onEdit: (task: Task) => void;
 }
 
-export default function BoardColumn({ title, tasks }: BoardColumnProps) {
+export default function BoardColumn({ title, tasks, onEdit }: BoardColumnProps) {
   return (
     <div className="w-72 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl shadow">
       <div className="flex justify-between items-center mb-4">
@@ -28,7 +29,7 @@ export default function BoardColumn({ title, tasks }: BoardColumnProps) {
         <BsThreeDots className="text-gray-500 cursor-pointer" />
       </div>
       {tasks.map(task => (
-        <TaskCard key={task.id} task={task} />
+        <TaskCard key={task.id} task={task} onClick={() => onEdit(task)} />
       ))}
     </div>
   );
