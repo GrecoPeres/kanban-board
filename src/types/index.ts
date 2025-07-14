@@ -1,4 +1,4 @@
-export type TaskStatus = 'A fazer' | 'Em progresso' | 'Finalizado';
+export type TaskStatus = 'Em fila' | 'Em progresso' | 'Finalizado';
 
 export interface Subtask {
   id: string;
