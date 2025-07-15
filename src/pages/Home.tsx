@@ -103,6 +103,7 @@ export default function Home() {
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
   const [selectedColumn, setSelectedColumn] = useState<string>('Em fila');
   const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
+  const [deletingColumn, setDeletingColumn] = useState<string | null>(null);
 
   const handleSaveTask = (newTask: Task) => {
     const updated = { ...data };
@@ -128,6 +129,15 @@ export default function Home() {
     entries.splice(order, 0, [title, []]);
   
     const updated = Object.fromEntries(entries);
+    setData(updated);
+    localStorage.setItem('kanbanData', JSON.stringify(updated));
+  };
+
+  const handleDeleteTask = (columnTitle: string, taskId: string) => {
+    const updated = {
+      ...data,
+      [columnTitle]: data[columnTitle].filter((task) => task.id !== taskId),
+    };
     setData(updated);
     localStorage.setItem('kanbanData', JSON.stringify(updated));
   };  
@@ -157,8 +167,30 @@ export default function Home() {
                 toast.success('Coluna deletada com sucesso!');
               }}
               onFilterColumn={() => alert(`Filtrar tarefas de ${status}`)}
-              onDeleteTask={() => alert(`Excluir tarefas de ${status}`)}
+              onDeleteTask={(taskId?: string) => {
+                if (!taskId) {
+                  // entra no modo exclusão
+                  setDeletingColumn(status);
+                  // toast('Modo deletar ativado! Clique nas lixeiras para excluir.');
+                  toast((t) => (
+                    <span>
+                      Modo exclusão ativado! <b>bold</b>
+                      <button onClick={() => setDeletingColumn(null)}>
+                        Desativar Modo
+                      </button>
+                    </span>
+                  ));
+                } else {
+                  // deleta tarefa
+                  handleDeleteTask(status, taskId);
+                  toast.success('Tarefa deletada!');
+                  // se não sobrar tarefas, sair modo
+                  if (data[status].length === 1) setDeletingColumn(null);
+                }
+              }}
+              isDeleting={deletingColumn === status}
             />
+
           ))}
 
           {Object.keys(data).length < 6 && (

@@ -111,7 +111,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
             {taskToEdit ? 'Editar Tarefa' : 'Nova Tarefa'}
           </h2>
           <button
-            onClick={saveTask}
+            onClick={onClose}
             className="text-gray-400 hover:text-red-500 text-xl font-bold"
           >
             &times;
