@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { FaFilter, FaPlus, FaTrash } from 'react-icons/fa';
-import TaskCard from './TaskCard';
 import { TbColumnRemove } from 'react-icons/tb';
+import toast from 'react-hot-toast';
+import TaskCard from './TaskCard';
 
 interface Task {
   id: string;
@@ -23,7 +24,7 @@ interface BoardColumnProps {
   onAddTask: () => void;
   onDeleteColumn: () => void;
   onFilterColumn: () => void;
-  onDeleteTask: () => void;
+  onDeleteTask: (taskId: string) => void; // alterado aqui
 }
 
 export default function BoardColumn({
@@ -37,6 +38,7 @@ export default function BoardColumn({
 }: BoardColumnProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false); // modo exclusão
 
   useEffect(() => {
     if (showMenu) {
@@ -92,8 +94,9 @@ export default function BoardColumn({
               </button>
               <button
                 onClick={() => {
-                  onDeleteTask();
+                  setIsDeleting(true);
                   setShowMenu(false);
+                  toast('Clique na lixeira para remover as tarefas');
                 }}
                 className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-700 dark:text-red-400"
               >
@@ -117,8 +120,28 @@ export default function BoardColumn({
 
       {/* lista de tarefas */}
       {tasks.map(task => (
-        <TaskCard key={task.id} task={task} onClick={() => onEdit(task)} />
+        <TaskCard
+          key={task.id}
+          task={task}
+          onClick={() => {
+            if (!isDeleting) onEdit(task);
+          }}
+          isDeleting={isDeleting}
+          onDelete={() => {
+            onDeleteTask(task.id);
+          }}
+        />
       ))}
+
+      {/* botão para cancelar o modo deletar */}
+      {isDeleting && (
+        <button
+          onClick={() => setIsDeleting(false)}
+          className="text-xs text-gray-500 mt-2 hover:text-gray-800 dark:hover:text-white underline"
+        >
+          Cancelar modo de exclusão
+        </button>
+      )}
     </div>
   );
 }
