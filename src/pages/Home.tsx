@@ -3,13 +3,16 @@ import BoardColumn from '../components/BoardColumn';
 import FloatingButton from '../components/FloatingButton';
 import TaskModal from '../components/TaskModal';
 import type { Task } from '../types';
+import AddColumnButton from '../components/AddColumnButton';
+import AddColumnModal from '../components/AddColumnModal';
+import toast from 'react-hot-toast';
 
 const sampleTasks = {
   'Em fila': [
     {
       id: '1',
       title: 'Criação de wireframes',
-      category: 'Wireframes',
+      category: 'UI/UX',
       subtasksDone: 1,
       subtasksTotal: 3,
       members: ['A', 'M'],
@@ -20,7 +23,7 @@ const sampleTasks = {
     {
       id: '2',
       title: 'Limpeza de dados',
-      category: 'Data Entry',
+      category: 'Dados',
       subtasksDone: 2,
       subtasksTotal: 5,
       members: ['B', 'C'],
@@ -31,7 +34,7 @@ const sampleTasks = {
     {
       id: '3',
       title: 'Agendamento de mídia social',
-      category: 'Media',
+      category: 'Redes Sociais',
       subtasksDone: 2,
       subtasksTotal: 4,
       members: ['D', 'E', 'F'],
@@ -39,12 +42,23 @@ const sampleTasks = {
       comments: 0,
       daysLeft: 1,
     },
-  ],
-  'Em progresso': [
     {
       id: '4',
       title: 'Edição de design gráfico',
-      category: 'Graphic Design',
+      category: 'Design Gráfico',
+      subtasksDone: 1,
+      subtasksTotal: 3,
+      members: ['G', 'H'],
+      attachments: 0,
+      comments: 0,
+      daysLeft: 3,
+    }
+  ],
+  'Em progresso': [
+    {
+      id: '5',
+      title: 'Edição de design gráfico',
+      category: 'Design Gráfico',
       subtasksDone: 1,
       subtasksTotal: 3,
       members: ['G', 'H'],
@@ -53,9 +67,22 @@ const sampleTasks = {
       daysLeft: 3,
     },
     {
-      id: '5',
+      id: '6',
       title: 'Design de slides de apresentação',
-      category: 'UI Design',
+      category: 'Design Gráfico',
+      subtasksDone: 1,
+      subtasksTotal: 2,
+      members: ['I', 'J'],
+      attachments: 1,
+      comments: 1,
+      daysLeft: 1,
+    },
+  ],
+  'Concluído': [
+    {
+      id: '7',
+      title: 'Design de slides de apresentação',
+      category: 'Design Gráfico',
       subtasksDone: 1,
       subtasksTotal: 2,
       members: ['I', 'J'],
@@ -67,62 +94,103 @@ const sampleTasks = {
 };
 
 export default function Home() {
-
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem('kanbanData');
     return saved ? JSON.parse(saved) : sampleTasks;
   });
 
-  const addTask = (newTask: any) => {
-    const updated = {
-      ...data,
-      'Em fila': [...data['Em fila'], newTask],
-    };
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [selectedColumn, setSelectedColumn] = useState<string>('Em fila');
+  const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
+
+  const handleSaveTask = (newTask: Task) => {
+    const updated = { ...data };
+    const column = selectedColumn;
+
+    const index = updated[column].findIndex((t: Task) => t.id === newTask.id);
+    if (index >= 0) {
+      updated[column][index] = newTask;
+    } else {
+      updated[column].push(newTask);
+    }
+
     setData(updated);
     localStorage.setItem('kanbanData', JSON.stringify(updated));
   };
 
-  const handleSaveTask = (newTask: Task) => {
-    const updated = { ...data };
-    const column = 'Em fila';
+  const handleAddColumn = (title: string, order: number) => {
+    if (!title || data[title]) return;
   
-    const taskIndex = updated[column].findIndex((t: Task) => t.id === newTask.id);
-    if (taskIndex >= 0) {
-      updated[column][taskIndex] = newTask;
-    } else {
-      updated[column].push(newTask);
-    }
+    const newColumn = { [title]: [] };
   
+    const entries = Object.entries(data);
+    entries.splice(order, 0, [title, []]);
+  
+    const updated = Object.fromEntries(entries);
     setData(updated);
     localStorage.setItem('kanbanData', JSON.stringify(updated));
   };  
-  
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
   return (
     <>
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 p-6">
-      <div className="flex flex-row gap-6 overflow-x-auto">
-        {Object.entries(data).map(([status, tasks]) => (
-          <BoardColumn key={status} title={status} tasks={tasks} onEdit={(task) => {
-            setTaskToEdit(task);
-            setModalOpen(true);
-          }} />
-        ))}
-      </div>
-    </div>
-    <FloatingButton onClick={() => setModalOpen(true)} />
-    <TaskModal
-      isOpen={isModalOpen}
-      onClose={() => {
-        setModalOpen(false);
-        setTaskToEdit(null);
-      }}
-      onSave={handleSaveTask}
-      taskToEdit={taskToEdit}
-    />
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-950 p-6">
+        <div className="flex flex-row gap-6 overflow-x-auto">
+          {Object.entries(data).map(([status, tasks]) => (
+            <BoardColumn
+              key={status}
+              title={status}
+              tasks={tasks}
+              onEdit={(task) => {
+                setSelectedColumn(status);
+                setTaskToEdit(task);
+                setModalOpen(true);
+              }}
+              onAddTask={() => {
+                setSelectedColumn(status);
+                setModalOpen(true);
+              }}
+              onDeleteColumn={() => {
+                const { [status]: removed, ...rest } = data;
+                setData(rest);
+                localStorage.setItem('kanbanData', JSON.stringify(rest))
+                toast.success('Coluna deletada com sucesso!');
+              }}
+              onFilterColumn={() => alert(`Filtrar tarefas de ${status}`)}
+              onDeleteTask={() => alert(`Excluir tarefas de ${status}`)}
+            />
+          ))}
 
+          {Object.keys(data).length < 6 && (
+            <AddColumnButton onClick={() => setIsAddColumnOpen(true)} />
+          )}
+
+        </div>
+      </div>
+
+      <FloatingButton onClick={() => {
+        setSelectedColumn('Em fila');
+        setModalOpen(true);
+      }} />
+
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setTaskToEdit(null);
+        }}
+        onSave={handleSaveTask}
+        taskToEdit={taskToEdit}
+      />
+
+      <AddColumnModal
+        isOpen={isAddColumnOpen}
+        onClose={() => setIsAddColumnOpen(false)}
+        onSave={(title, order) => {
+          handleAddColumn(title, order);
+          setIsAddColumnOpen(false);
+        }}
+      />
     </>
   );
 }
