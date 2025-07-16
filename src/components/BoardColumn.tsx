@@ -24,7 +24,7 @@ interface BoardColumnProps {
   onAddTask: () => void;
   onDeleteColumn: () => void;
   onFilterColumn: () => void;
-  onDeleteTask: (taskId: string) => void; // alterado aqui
+  onDeleteTask: (taskId: string) => void;
 }
 
 export default function BoardColumn({
@@ -118,7 +118,7 @@ export default function BoardColumn({
         </div>
       </div>
 
-      {/* lista de tarefas */}
+      {/* tarefas */}
       {tasks.map(task => (
         <TaskCard
           key={task.id}
@@ -133,7 +133,7 @@ export default function BoardColumn({
         />
       ))}
 
-      {/* botão para cancelar o modo deletar */}
+      {/* btn de cancelar o modo deletar */}
       {isDeleting && (
         <button
           onClick={() => setIsDeleting(false)}

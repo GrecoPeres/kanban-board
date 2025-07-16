@@ -25,21 +25,27 @@ export default function AddColumnModal({ isOpen, onClose, onSave }: Props) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Nova Coluna</h2>
-        <input
-          type="text"
-          placeholder="Nome da Coluna"
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Ordem de exibição"
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          value={order}
-          onChange={(e) => setOrder(parseInt(e.target.value))}
-        />
+        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Adicionar Coluna</h2>
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-white">Nome da Coluna</label>
+          <input
+            type="text"
+            placeholder="Nome da Coluna"
+            className="w-full p-2 border border-gray-300 rounded mb-4"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+        <div>
+          <label htmlFor="order" className="block text-sm font-medium text-gray-700 dark:text-white">Ordem de Exibição</label>
+          <input
+            type="number"
+            placeholder="Ordem de Exibição"
+            className="w-full p-2 border border-gray-300 rounded mb-4"
+            value={order}
+            onChange={(e) => setOrder(parseInt(e.target.value))}
+          />
+        </div>
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="text-gray-500 hover:text-red-500">Cancelar</button>
           <button
