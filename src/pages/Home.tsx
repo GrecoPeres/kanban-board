@@ -11,23 +11,40 @@ const sampleTasks = {
   'Em fila': [
     {
       id: '1',
-      title: 'Criação de wireframes',
-      category: 'UI/UX',
-      subtasksDone: 1,
-      subtasksTotal: 3,
-      members: ['A', 'M'],
-      attachments: 3,
-      comments: 1,
-      daysLeft: 7,
+      title: 'Criar protótipo',
+      category: 'UX',
+      assignees: ['Lucas', 'Bruna'],
+      link: 'https://figma.com/file/abc',
+      fileUrl: 'https://figma.com/file/abc',
+      subtasks: [
+        {
+          id: 's1',
+          title: 'Criar tela de login',
+          done: true,
+          link: 'https://figma.com/file/abc',
+          fileUrl: 'https://figma.com/file/abc',
+          comment: 'Tela concluída'
+        },
+        {
+          id: 's2',
+          title: 'Validar com o time',
+          done: false,
+          comment: 'Esperando aprovação'
+        }
+      ],
+      attachments: 1,
+      comments: 2,
+      daysLeft: 4
     },
     {
       id: '2',
       title: 'Limpeza de dados',
       category: 'Dados',
-      subtasksDone: 2,
-      subtasksTotal: 5,
-      members: ['B', 'C'],
+      assignees: ['Arthur', 'Carlos'],
+      subtasks: [],
       attachments: 2,
+      link: 'https://figma.com/file/abc',
+      fileUrl: 'https://figma.com/file/abc',
       comments: 2,
       daysLeft: 6,
     },
@@ -35,9 +52,8 @@ const sampleTasks = {
       id: '3',
       title: 'Agendamento de mídia social',
       category: 'Redes Sociais',
-      subtasksDone: 2,
-      subtasksTotal: 4,
-      members: ['D', 'E', 'F'],
+      assignees: ['Daniela', 'Eduardo', 'Fernanda'],
+      subtasks: [],
       attachments: 1,
       comments: 0,
       daysLeft: 1,
@@ -46,9 +62,8 @@ const sampleTasks = {
       id: '4',
       title: 'Edição de design gráfico',
       category: 'Design Gráfico',
-      subtasksDone: 1,
-      subtasksTotal: 3,
-      members: ['G', 'H'],
+      assignees: ['Gustavo', 'Higor'],
+      subtasks: [],
       attachments: 0,
       comments: 0,
       daysLeft: 3,
@@ -59,9 +74,8 @@ const sampleTasks = {
       id: '5',
       title: 'Edição de design gráfico',
       category: 'Design Gráfico',
-      subtasksDone: 1,
-      subtasksTotal: 3,
-      members: ['G', 'H'],
+      assignees: ['Greco'],
+      subtasks: [],
       attachments: 0,
       comments: 0,
       daysLeft: 3,
@@ -70,9 +84,8 @@ const sampleTasks = {
       id: '6',
       title: 'Design de slides de apresentação',
       category: 'Design Gráfico',
-      subtasksDone: 1,
-      subtasksTotal: 2,
-      members: ['I', 'J'],
+      assignees: ['Greco'],
+      subtasks: [],
       attachments: 1,
       comments: 1,
       daysLeft: 1,
@@ -83,9 +96,8 @@ const sampleTasks = {
       id: '7',
       title: 'Design de slides de apresentação',
       category: 'Design Gráfico',
-      subtasksDone: 1,
-      subtasksTotal: 2,
-      members: ['I', 'J'],
+      assignees: ['Ingrid', 'Julio'],
+      subtasks: [],
       attachments: 1,
       comments: 1,
       daysLeft: 1,
@@ -211,7 +223,9 @@ export default function Home() {
           setModalOpen(false);
           setTaskToEdit(null);
         }}
-        onSave={handleSaveTask}
+        onSave={async (newTask) => {
+          await handleSaveTask(newTask);
+        }}
         taskToEdit={taskToEdit}
       />
 

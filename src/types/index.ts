@@ -3,7 +3,10 @@ export type TaskStatus = 'Em fila' | 'Em progresso' | 'Finalizado';
 export interface Subtask {
   id: string;
   title: string;
-  completed: boolean;
+  done: boolean;
+  link?: string;
+  fileUrl?: string;
+  comment?: string;
 }
 
 export interface Comment {
@@ -20,12 +23,16 @@ export interface Task {
   category: string;
   status: TaskStatus;
   subtasks: Subtask[];
-  attachments: string[];
-  comments: Comment[];
+  attachments: number;
+  links: string[];
+  files: string[];
+  comments: number;
   createdAt: string;
   dueDate: string;
   owner: string;
   assignees: string[];
   priority: 'Low' | 'Medium' | 'High';
   archived: boolean;
+  subtasksDone: number;
+  subtasksTotal: number;
 }
