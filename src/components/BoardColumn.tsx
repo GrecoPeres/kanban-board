@@ -50,7 +50,8 @@ export default function BoardColumn({
   }, [showMenu]);
 
   return (
-    <div className="w-72 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl shadow relative">
+    // < className="w-72 h-[calc(100vh-4rem)] bg-gray-50 dark:bg-gray-900 p-4 rounded-xl shadow relative">
+    <div className="w-72 h-[calc(100vh-4rem)] bg-gray-50 dark:bg-gray-900 p-4 rounded-xl shadow relative">
       <div className="flex justify-between items-center mb-4">
         <h2 className="font-semibold text-gray-700 dark:text-white">
           {title} <span className="text-sm text-gray-400">({tasks.length})</span>
