@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import type { Task, Subtask, TaskStatus } from '../types';
+import type { Task, Subtask } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -19,8 +19,8 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
   const [members, setMembers] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
   const [files, setFiles] = useState<string[]>([]);  
+  const [links, setLinks] = useState([{ type: '', value: '' }]);
 
   useEffect(() => {
     if (isOpen) {
@@ -106,6 +106,28 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
     onClose();
   };
 
+  const handleLinkChange = (index: number, field: 'type' | 'value', value: any) => {
+    const updatedLinks = [...links];
+  
+    if (field === 'value' && updatedLinks[index].type === 'Arquivo' && value instanceof File) {
+      updatedLinks[index].value = value.name;
+      setFiles(prev => [...prev, value.name]);
+    } else {
+      updatedLinks[index][field] = value;
+    }
+  
+    setLinks(updatedLinks);
+  };  
+
+  const addNewLink = () => {
+    setLinks([...links, { type: '', value: '' }]);
+  };
+
+  const removeLink = (index: number) => {
+    const updatedLinks = links.filter((_, i) => i !== index);
+    setLinks(updatedLinks);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -170,9 +192,49 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
               <option>Alta</option>
             </select>
           </div>
+          
+          <div className='flex flex-col gap-2'>
+            <label className="text-sm text-gray-700 dark:text-gray-300">Links e Arquivos</label>
+            {links.map((link, index) => (
+            <div key={index} className='flex items-center gap-2 mb-1'>
+              <select
+                value={link.type}
+                onChange={(e) => handleLinkChange(index, 'type', e.target.value)}
+                className='p-2 border rounded mt-1'
+              >
+                <option value="">Tipo</option>
+                <option value="Link">Link</option>
+                <option value="Arquivo">Arquivo</option>
+              </select>
+
+              {link.type === 'Link' ? (
+                <input
+                  className='w-full p-2 border rounded mt-1'
+                  type="text"
+                  placeholder="https://..."
+                  value={link.value}
+                  onChange={(e) => handleLinkChange(index, 'value', e.target.value)}
+                />
+              ) : (
+                <input                
+                  className='w-full p-2 border rounded mt-1'
+                  type="file"
+                  onChange={(e) => handleLinkChange(index, 'value', e.target.files?.[0])}
+                />
+              )}
+
+              <button onClick={() => removeLink(index)} className='text-red-500'>
+                <FaTrash/>
+              </button>
+            </div>
+            ))}
+          </div>
+          <button onClick={addNewLink} className='text-blue-600 hover:underline text-sm mt-1 flex items-center gap-1'>
+            + Adicionar link ou arquivo
+          </button>
 
           {/* Links */}
-          <div className='flex justify-between'>
+          {/* <div className='flex justify-between'>
             <label className="text-sm text-gray-700 dark:text-gray-300">Links</label>
             {links.map((l, idx) => (
               <div key={idx} className="flex items-center gap-2 mb-1">
@@ -203,10 +265,10 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
             >
               <FaPlus /> Adicionar link
             </button>
-          </div>
+          </div> */}
 
           {/* Arquivos */}
-          <div className='flex flex-col gap-2'>
+          {/* <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-2'>
               <label className="text-sm text-gray-700 dark:text-gray-300">Arquivos</label>
               {files.map((f, idx) => (
@@ -241,7 +303,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit }: TaskM
                 <FaPlus /> Adicionar arquivo
               </button>
             </div>
-          </div>
+          </div> */}
 
           {/* Datas */}
           <div className="flex gap-2">
