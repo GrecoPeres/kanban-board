@@ -90,16 +90,16 @@ export default function TaskCard({ task, onClick, isDeleting, onDelete }: TaskCa
           )}
           {/* Dias restantes */}
           <div className="flex items-center gap-1">
-            <FaRegClock /> {task.daysLeft}d
+            <FaRegClock /> {task.daysLeft || 0}d
           </div>
         </div>
       </div>
 
-      {/* Botão de deletar se estiver no modo delete */}
+      {/* btn de deletar se estiver no modo delete */}
       {isDeleting && (
         <button
           onClick={(e) => {
-            e.stopPropagation(); // Evita abrir o modal
+            e.stopPropagation();
             onDelete?.();
           }}
           title="Deletar tarefa"
